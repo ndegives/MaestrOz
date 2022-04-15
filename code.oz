@@ -42,7 +42,7 @@ local
             of note(name:A octave:B sharp:C duration:D instrument:E)|X then {Length T Acc+D}
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Length T Acc+D}
             [] silence(duration:D) then {Length T Acc+A}
-            [] nil then 0
+            else 0
             end
          [] nil then Acc
       end
@@ -65,16 +65,17 @@ local
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Etire la duree de la partition en etirant chaque note par le facteur Fact
-   % Input : Facteur d'étirement (F) et partition à étirer
-   % Output : La partition étirée (chaque son/silence est étiré)
+   % Input : Facteur d'etirement (F) et partition à etirer
+   % Output : La partition etiree (chaque son/silence est etire)
    fun {Stretch Fact Part}
-      fun {StretchA Y}
-         case Y
-         of note(name:A octave:B sharp:C duration:D instrument:E) then note.duration = D*Fact
-         [] H|T then {Strecth Fact H|T}
-         [] silence(duration:D) then silence.duration = Fact*D 
-         [] nil then nil
+      case Part
+      of H|T then
+         case H 
+         of note(name:A octave:B sharp:C duration:D instrument:E) then note.duration = D*Fact | {Stretch Fact T} % Pour les notes
+         [] X|Y then {Stretch Fact X|Y} | {Stretch Fact T} % Pour les accords
+         [] silence(duration:D) then silence.duration = D*Fact | {Stretch Fact T} % Pour les silences
          end
+      [] nil then nil
       end
    end
 
@@ -83,20 +84,28 @@ local
    % Input : Une note (Note) et un nombre de repetition (Amount)
    % Output : Une liste avec Amount fois la note
    fun {Drone Note Amount}
-      Note =1
+      fun {Add Amount Acc}
+         if Amount >= 1 then {Add Amount-1 {Append Acc Note}}
+         else Acc
+         end
+      end
+   in {Add Amount nil}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : 
-   % Output : 
-   fun {Transpose Semitone}
-      Semitone =1
+   % Transpose les sons d un certain nombre de semi-tons vers le haut (positif) ou vers le bas (negatif)
+   % Input : N le nombre de de semi-ton de difference et Part la partition
+   % Output : Partition avec les sons transfomer de Semitone semi-tons
+   fun {Transpose Semitone Part}
+      case Part
+      of Note|T 
    end
    
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
    % Translate a note to the extended notation.
+   % Fonction fournie par les enseignants
    fun {NoteToExtended Note}
       case Note
       of Name#Octave then
