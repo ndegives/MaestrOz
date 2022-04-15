@@ -1,9 +1,10 @@
 % Degives Nicolas 35141700
-
+%
+% Date : April 2022
 local
    % See project statement for API details.
    % !!! Please remove CWD identifier when submitting your project !!!
-   CWD = 'C:/Users/nicd/Desktop/ProjetOZ/project_template/' % Put here the **absolute** path to the project files
+   CWD = 'C:/Nico/Github/MaestrOz' % Put here the **absolute** path to the project files
    [Project] = {Link [CWD#'Project2022.ozf']}
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
@@ -11,53 +12,85 @@ local
    % Input : 
    % Output : 
    fun {Notes P}
-
+      P=1
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : 
    % Output : 
    fun {Chords P}
-
+      P=1
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : 
    % Output : 
    fun {Identity P}
-
+      P=1
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Renvoie la duree (secondes) d'une partition en additionnant la duree de chaque note/silence
+   % Si accord, ne prend que la premiere note puisque accord=plusieurs notes en meme temps
+   % Input : Une partition (Part)
+   % Output : La durée de la partition
+   fun {Length Part}
+      fun {LengthA Part Acc}
+         case Part of
+         H|T then
+            case H
+            of note(name:A octave:B sharp:C duration:D instrument:E)|X then {Length T Acc+D}
+            [] note(name:A octave:B sharp:C duration:D instrument:E) then {Length T Acc+D}
+            [] silence(duration:D) then {Length T Acc+A}
+            [] nil then 0
+            end
+         [] nil then Acc
+      end
+   in {LengthA Part 0} 
+   end
+
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Fixe la duree de la partition au nombre de secondes indiqué.
+   % Adapte la duree de chaque note/silence en fonction de la duree initiale
    % Input : Time : le temps (Time) en secondes et la partition (Part)
    % Output : La partition (Part) ajustée au temps (Time)
    fun {Duration Time Part}
       local L in
          L={Length Part}
-         {Strech Time/L Part}
+         {Stretch Time/L Part}
+         % Fonction Stretch etire chaque note une par une
       end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Etire la duree de la partition en etirant chaque note par le facteur Fact
    % Input : Facteur d'étirement (F) et partition à étirer
-   % Output : 
+   % Output : La partition étirée (chaque son/silence est étiré)
    fun {Stretch Fact Part}
-      fun {}
-
+      fun {StretchA Y}
+         case Y
+         of note(name:A octave:B sharp:C duration:D instrument:E) then note.duration = D*Fact
+         [] H|T then {Strecth Fact H|T}
+         [] silence(duration:D) then silence.duration = Fact*D 
+         [] nil then nil
+         end
+      end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : 
-   % Output : 
+   % Repete la note (Note) un nombre (Amount) de fois
+   % Input : Une note (Note) et un nombre de repetition (Amount)
+   % Output : Une liste avec Amount fois la note
    fun {Drone Note Amount}
-
+      Note =1
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : 
    % Output : 
    fun {Transpose Semitone}
-
+      Semitone =1
    end
    
 
