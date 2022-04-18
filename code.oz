@@ -133,6 +133,11 @@ local
    % Input : Prend une partition et transforme chaque note de Semitones semitons
    % Output : Retourne la partition de notes transformées
    fun {Transpose Semitones Part}
+      case Part
+      of H|T then {TransposeNotes Semitones H} | {Transpose Semitones T}
+      [] nil then nil
+      end
+   end
 
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,16 +163,25 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input :
+   % Output :
 
    fun {PartitionToTimedList Partition}
-      % TODO
-      case Partition of H|T then 
-         case H
-         of ... then ...
-         [] ... then ...
+      fun {Acc Partition Acc}
+         case Partition 
+         of H|T then case H
+            of duration(seconds:A P) then {Acc T {Append Acc {Duration A P}}}
+            [] stretch(factor:A P) then {Acc T {Append Acc {Stretch A P}}}
+            [] drone(note:Note amount:Amount) then {Acc T {Append Acc {Drone Note Amount}}}
+            [] transpose(semitones:N P) then {Acc T {Append Acc {Transpose N P}}}
+            [] ... then ...
+            end
+         else Acc
          end
-      [] nil then nil
+      end
+   in {Acc Partition nil}
    end
+   
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
