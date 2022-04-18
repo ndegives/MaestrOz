@@ -93,14 +93,47 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Transpose les sons d un certain nombre de semi-tons vers le haut (positif) ou vers le bas (negatif)
-   % Input : N le nombre de de semi-ton de difference et Part la partition
-   % Output : Partition avec les sons transfomer de Semitone semi-tons
-   fun {Transpose Semitone Part}
-      case Part
-      of Note|T 
+   % Transpose les notes d un certain nombre de semi-tons vers le haut (positif) ou vers le bas (negatif)
+   % Input : N le nombre de de semi-ton de difference et note la note a transposer
+   % Output : Note transfomer de Semitone semi-tons
+   fun {TransposeNotes N Notes}
+      fun {TransposeNote Note Acc}
+         if Acc<N then
+            case Note.name 
+            of c then
+               if Note.sharp == flase then {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+               else {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               end
+            [] d then
+               if Note.sharp == false then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+               else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               end
+            [] e then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+            [] f then
+               if Note.sharp == false then {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+               else {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               end
+            [] g then
+               if Note.sharp == false then {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+               else {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               end
+            [] a then
+               if Note.sharp == false then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+               else {TransposeNote note(name:b octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               end
+            [] b then {TransposeNote note(name:c octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+            end
+         else Note
+         end
+      end
+   in {TransposedNote Note 0}
    end
-   
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Prend une partition et transforme chaque note de Semitones semitons
+   % Output : Retourne la partition de notes transformées
+   fun {Transpose Semitones Part}
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
