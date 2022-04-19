@@ -182,7 +182,38 @@ local
    in {Acc Partition nil}
    end
    
-
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : partition 
+   % Output :
+      
+   fun {Partition}
+      % TODO 
+      
+   end
+   
+      
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      % Input : list of musics to be played in the same time
+   % Output :
+      
+   fun {Merge}
+      % TODO 
+      
+   end
+  
+   
+      
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : relative path to a .wav file
+   % Output : list of samples
+      
+   fun {Wave}
+      % TODO 
+      
+   end
+   
+    
+      
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
    fun {Mix P2T Music}
