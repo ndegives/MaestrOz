@@ -1,5 +1,5 @@
 # MaestrOz
-Project for the course LINFO1104
+Project for the course programmation
 
 code.oz est le fichier qui sera soumis
 
