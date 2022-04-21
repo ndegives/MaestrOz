@@ -271,17 +271,22 @@ local
       % Input : 
    % Output : 
    fun {Samples Note}
-      fun {SamplesAux N Acc}
-            case N of silence(duration:D) then
-               if Acc< 
-               0.0 | {SamplesAux N Acc+1.0}
-            else
-               0.5*{Sin 2*Pi*{Freq Note}*Acc/44100} |  {SamplesAux N Acc+1.0}
-          
-         
-      end
-   in 
-      {SamplesAux Note 0}
+	local Pi 
+      		fun {SamplesAux N Acc}
+			case N 
+			of silence(duration:D) then
+				if Acc< 44100.0*N.duration % Generation when we are still in the duration
+			        	0.0 | {SamplesAux N Acc+1.0}
+        			else
+					nil
+				end
+			[] note(duration:D) then 
+				0.5*{Sin 2*Pi*{Freq Note}*Acc/44100.0} |  {SamplesAux N Acc+1.0}
+			end
+   	in 
+		Pi = 3.14159265359
+	      	{SamplesAux Note 1.0}
+	end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
