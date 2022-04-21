@@ -98,32 +98,62 @@ local
    % Output : Note transfomer de Semitone semi-tons
    fun {TransposeNotes N Notes}
       fun {TransposeNote Note Acc}
-         if Acc<N then
-            case Note.name 
-            of c then
-               if Note.sharp == flase then {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-               else {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+         if Acc>0 then
+            if Acc<N then
+               case Note.name 
+               of c then
+                  if Note.sharp == flase then {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+                  else {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+                  end
+               [] d then
+                  if Note.sharp == false then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+                  else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+                  end
+               [] e then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               [] f then
+                  if Note.sharp == false then {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+                  else {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+                  end
+               [] g then
+                  if Note.sharp == false then {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+                  else {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+                  end
+               [] a then
+                  if Note.sharp == false then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
+                  else {TransposeNote note(name:b octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+                  end
+               [] b then {TransposeNote note(name:c octave:Note.octave+1 sharp:false duration:note.duration instrument : note.instrument) Acc+1}
                end
-            [] d then
-               if Note.sharp == false then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-               else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-               end
-            [] e then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-            [] f then
-               if Note.sharp == false then {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-               else {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-               end
-            [] g then
-               if Note.sharp == false then {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-               else {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-               end
-            [] a then
-               if Note.sharp == false then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-               else {TransposeNote note(name:b octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-               end
-            [] b then {TransposeNote note(name:c octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+            else Note
             end
-         else Note
+         elseif Acc<0 then
+            if Acc>N then
+               case Note.name
+               of b then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+               [] a then
+                  if Note.sharp==true then {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  else {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+                  end
+               [] g then
+                  if Note.sharp==true then {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  else {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+                  end
+               [] f then
+                  if Note.sharp==true then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  end
+               [] e then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+               [] d then 
+                  if Note.sharp==true then {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  else {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+                  end
+               [] c then
+                  if Note.sharp==true then {TransposeNote note(name:c octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  else {TransposeNote note(name:b octave:Note.octave-1 sharp:false duration:note.duration instrument:note.instrument) Acc-1}
+                  end
+               end
+            else Note
+            end
          end
       end
    in {TransposedNote Note 0}
@@ -174,7 +204,10 @@ local
             [] stretch(factor:A P) then {Acc T {Append Acc {Stretch A P}}}
             [] drone(note:Note amount:Amount) then {Acc T {Append Acc {Drone Note Amount}}}
             [] transpose(semitones:N P) then {Acc T {Append Acc {Transpose N P}}}
-            [] ... then ...
+            [] silence(duration:A) then {Acc T {Append Acc silence(duration:A)}}
+            [] Note then {Acc T {Append Acc {NoteToExtended Note}}}
+            [] note(name:A octave:B sharp:C duration:D instrument:E) then {Acc T {Append Acc note(name:A octave:B sharp:C duration:D instrument:E)}}
+            else Acc
             end
          else Acc
          end
