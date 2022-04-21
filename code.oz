@@ -216,9 +216,72 @@ local
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input :
+      
+      % Input : extended note as arg
+      % Output : return the height in comparison to A4
+      
+   fun {Hauteur Note}
+         local Oct N in
+            Oct = {IntToFloat Note.octave} - 4.0
+            case Note.name 
+            of c then
+               if Note.sharp then N=~8.0
+               else N=~9.0
+               end
+            [] d then
+               if Note.sharp then N=~6.0
+               else N=~7.0
+               end
+            [] e then
+               N=~5.0
+            [] f then
+               if Note.sharp then N=~3.0
+               else
+	       		   N=~4.0
+	    		   end
+   	 		[] g then
+	       		if Note.sharp then N=~1.0
+	       		else
+	        			N=~2.0
+	    	   	end
+   	 		[] a then
+	       		if Note.sharp then N=1.0
+	       		else
+	       			N=0.0
+	    	   	end
+            [] b then N=2.0
+	    		end
+	 	   	12.0 * Oct + N
+      	end
+   end
+             
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      % Input : extended note 
+   % Output : return the associated frq 
+      
+   fun {Freq Note}
+      {Pow 2.O {Hauteur Note}/12.0}*440.0      
+   end
+  
+      
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      
+  %PAS FINIE
+      
+      % Input : 
    % Output : 
    fun {Samples Note}
+      fun {SamplesAux N Acc}
+            case N of silence(duration:D) then
+               if Acc< 
+               0.0 | {SamplesAux N Acc+1.0}
+            else
+               0.5*{Sin 2*Pi*{Freq Note}*Acc/44100} |  {SamplesAux N Acc+1.0}
+          
+         
+      end
+   in 
+      {SamplesAux Note 0}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,7 +318,7 @@ local
    % Input :
    % Output :
    fun {Reverse Music}
-      
+      {List.reverse P}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
