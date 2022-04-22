@@ -1,5 +1,5 @@
 % Degives Nicolas 35141700
-%
+% Heroufosse Gauthier
 % Date : April 2022
 local
    % See project statement for API details.
@@ -9,31 +9,10 @@ local
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : 
-   % Output : 
-   fun {Notes P}
-      P=1
-   end
-
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : 
-   % Output : 
-   fun {Chords P}
-      P=1
-   end
-
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : 
-   % Output : 
-   fun {Identity P}
-      P=1
-   end
-
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Renvoie la duree (secondes) d'une partition en additionnant la duree de chaque note/silence
-   % Si accord, ne prend que la premiere note puisque accord=plusieurs notes en meme temps
-   % Input : Une partition (Part)
-   % Output : La durée de la partition
+   % Returns the duration (seconds) of a score by adding the duration of each note/silence
+   % If chord, take only the first note since chord = several notes at the same time
+   % Input : A partition (Part)
+   % Output : The duration of the partition
    fun {Length Part}
       fun {LengthA Part Acc}
          case Part of
@@ -51,22 +30,22 @@ local
 
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Fixe la duree de la partition au nombre de secondes indiqué.
-   % Adapte la duree de chaque note/silence en fonction de la duree initiale
-   % Input : Time : le temps (Time) en secondes et la partition (Part)
-   % Output : La partition (Part) ajustée au temps (Time)
+   % Sets the duration of the partition to the specified number of seconds.
+   % Adapts the duration of each note/silence according to the initial duration
+   % Input : Time : the time in secondes ; Part : the partition
+   % Output : The partition (Part) adjusted to the time (Time)
    fun {Duration Time Part}
       local L in
          L={Length Part}
          {Stretch Time/L Part}
-         % Fonction Stretch etire chaque note une par une
+         % Stretch function stretches each note one by one
       end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Etire la duree de la partition en etirant chaque note par le facteur Fact
-   % Input : Facteur d'etirement (F) et partition à etirer
-   % Output : La partition etiree (chaque son/silence est etire)
+   % Stretch the duration of the partition by stretching each note by the factor Fact
+   % Input : Stretch factor (F) and partition to be stretched
+   % Output : The stretched score (each sound/silence is stretched)
    fun {Stretch Fact Part}
       case Part
       of H|T then
@@ -80,9 +59,9 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Repete la note (Note) un nombre (Amount) de fois
-   % Input : Une note (Note) et un nombre de repetition (Amount)
-   % Output : Une liste avec Amount fois la note
+   % Repeats the note a number (Amount) of times
+   % Input : A note (Note) and a number of repetitions (Amount)
+   % Output : A list with Amount times note
    fun {Drone Note Amount}
       fun {Add Amount Acc}
          if Amount >= 1 then {Add Amount-1 {Append Acc Note}}
@@ -93,9 +72,9 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Transpose les notes d un certain nombre de semi-tons vers le haut (positif) ou vers le bas (negatif)
-   % Input : N le nombre de de semi-ton de difference et note la note a transposer
-   % Output : Note transfomer de Semitone semi-tons
+   % Transposes the notes a certain number of semitones up (positive) or down (negative)
+   % Input : N the number of semitones of difference and note the note to transpose
+   % Output : Semitone transfomer note
    fun {TransposeNotes N Notes}
       fun {TransposeNote Note Acc}
          if Acc>0 then
@@ -168,7 +147,6 @@ local
       [] nil then nil
       end
    end
-
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -256,7 +234,7 @@ local
    end
              
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      % Input : extended note 
+   % Input : extended note 
    % Output : return the associated frq 
       
    fun {Freq Note}
@@ -264,11 +242,10 @@ local
    end
   
       
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
-  %PAS FINIE
-      
-      % Input : 
+   %PAS FINIE 
+   % Input : 
    % Output : 
    fun {Samples Note}
 	local Pi 
@@ -300,7 +277,7 @@ local
    
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      % Input : list of musics to be played in the same time
+   % Input : list of musics to be played in the same time
    % Output :
       
    fun {Merge}
@@ -311,19 +288,18 @@ local
    
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : relative path to a .wav file
-   % Output : list of samples
+   % Input : relative path to a .wav file (string)
+   % Output : list of samples of the .wav file
       
-   fun {Wave}
-      % TODO 
-      
+   fun {Wave File}
+      {Project.readFile File}
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input :
-   % Output :
+   % Input : Music : a list of sample
+   % Output : The reversed music. It reverses the order of the samples
    fun {Reverse Music}
-      {List.reverse P}
+      {List.reverse Music}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
