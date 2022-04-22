@@ -311,10 +311,29 @@ local
    
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%pre : prend une fonction P2T et une musique Music en argument
+%post :retourne une liste de samples
+			
    fun {Mix P2T Music}
-      % TODO
-      {Project.readFile CWD#'wave/animals/cow.wav'}
+	case Music 
+	of H|T then 
+		case H of samples(P) then {Append P {Mix P2T T}}
+						 		[] partition(P)
+	 		[] wave(P) then
+	 		[] merge(P) then
+	 		[] reverse(P) then
+	 		[] repeat(amount:A P) then
+	 		[] loop(seconds:A P) then
+	 		[] clip(low:A high:B P) then
+	 		[] echo(delay:T decay:A P) then
+	 		[] fade(start:A out:B P) then
+	 		[] cut(start:A finish:B P) then
+			else
+				skip %{Append nil $}
+			end
+		end
+	end
+      %{Project.readFile CWD#'wave/animals/cow.wav'}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
