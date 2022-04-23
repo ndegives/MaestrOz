@@ -262,12 +262,12 @@ local
 			end
    	in 
 		Pi = 3.14159265359
-	      	{SamplesAux Note 1.0}
+	   {SamplesAux Note 1.0}
 	end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : partition 
+   % Input : A partition 
    % Output :
       
    fun {Partition}
@@ -277,15 +277,21 @@ local
    
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : list of musics to be played in the same time
-   % Output :
+   % Input : list of musics (each with its intensities) to be played in the same time
+   % Output : Sum of the musics in one music
       
-   fun {Merge}
-      % TODO 
-      
+   fun {Merge Musics}
+      case Musics
+      of H|T then case H
+         of I#M then {Add {Mult I {Mix PartitionToTimedList M}} {Merge T}}
+         else skip
+         end
+      [] H|nil then
+         case H of I#M then {Mult I {Mix PartitionToTimedList M}}
+         else skip
+         end
+      end
    end
-  
-   
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : relative path to a .wav file (string)
@@ -303,22 +309,76 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Amount : natural ; Music
+   % Output : The music with amount repetition
+   fun {Repeat Amount Music}
+      fun {RepeatA Amount Music Acc}
+         if Ammount > 0 then {RepeatA Amount-1 Music {Append Acc Music}}
+         else Acc
+         end
+      end
+   in {ReapeatA Amount Music nil}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Duration (float): in seconds ; Music
+   % Output : The music played in loop on the time of the duration. The last repetition is truncated to not exceed the duration
+   fun {Loop Duration Music}
+      fun {LoopN Duration Music N}
+         if N=< {FloatToInt Duration*44100.0} then case Music
+            of H|T then H|{LoopN Duration T N+1}
+            [] H|nil then H|{LoopN Duration Music N+1}
+            end
+         else nil
+         end
+      end
+   in {LoopN Duration Music 1}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Low and High (float) : Boundaries ; Music
+   % Output : 
+   fun {Clip Low High Music}
+      case Music
+      of H|T then 
+         if H>High then High|{Clip Low High T}
+         elseif H<Low then Low|{Clip Low High T}
+         else H|{Clip Low High T}
+         end
+      else nil
+      end
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
    % Output :
-   fun {Repeat Amount Music}
+   fun {Echo Delay Decay Music}
+      {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList}}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Start :
+   %         Out : 
+   %         Music :
+   % Output :
+   fun {Fade Start Out Music}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input :
+   % Output :
+   fun {Cut Start Finish Music}
 
    end
-   
-      
+
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%pre : prend une fonction P2T et une musique Music en argument
-%post :retourne une liste de samples
-			
+   % Input : prend une fonction P2T et une musique Music en argument
+   % Output :retourne une liste de samples		
    fun {Mix P2T Music}
 	case Music 
 	of H|T then 
 		case H of samples(P) then {Append P {Mix P2T T}}
-						 		[] partition(P)
+			[] partition(P)
 	 		[] wave(P) then
 	 		[] merge(P) then
 	 		[] reverse(P) then
