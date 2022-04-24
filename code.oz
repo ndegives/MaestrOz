@@ -349,17 +349,9 @@ local
    % Output : Sum of the two list
    declare
    fun {Add L1 L2}
-      case L1
-      of H|T then
-         case L2
-         of H|T then
-            if {List.length L1} - {List.length L2} > 0 then {Append L2 [0]}|{Add L1 L2}
-            elseif {List.length L2} - {List.length L1} > 0 then {Append L1 [0]}|{Add L1 L2}
-            else nil
-            end
-         [] nil then nil
-         end
-      [] nil then nil
+      if {List.length L1} - {List.length L2} > 0 then {Append L2 [0]}|{Add L1 L2}
+      elseif {List.length L2} - {List.length L1} > 0 then {Append L1 [0]}|{Add L1 L2}
+      else skip
       end
    end
    declare
