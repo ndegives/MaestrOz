@@ -248,28 +248,24 @@ local
    % Input : 
    % Output : 
    fun {Samples Note}
-	local Pi 
-      		fun {SamplesAux N Acc}
-			case N 
-			of silence(duration:D) then
-				if Acc< 44100.0*N.duration % Generation when we are still in the duration
-			        	0.0 | {SamplesAux N Acc+1.0}
+      fun {SamplesAux N Acc}
+         case N 
+         of silence(duration:D) then
+				if Acc< 44100.0*N.duration then 0.0 | {SamplesAux N Acc+1.0}
         		else nil
 				end
-			[] note(duration:D) then 
-				0.5*{Sin 2*Pi*{Freq Note}*Acc/44100.0} |  {SamplesAux N Acc+1.0}
+			[] note(duration:D) then 0.5*({Sin (2*3.14*{Freq Note}*Acc)/44100.0}) |  {SamplesAux N Acc+1.0}
 			end
-   	in 
-		Pi = 3.14159265359
-	   {SamplesAux Note 1.0}
+      end
+   in
+      {SamplesAux Note 1.0}
 	end
-   end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : A partition 
    % Output :
       
-   fun {Partition}
+   fun {Partition Part}
       % TODO 
       
    end
@@ -396,21 +392,21 @@ local
    fun {Mix P2T Music}
 	case Music 
 	of H|T then 
-		case H of samples(P) then {Append P {Mix P2T T}}
-			[] partition(P)
-	 		[] wave(P) then
-	 		[] merge(P) then
-	 		[] reverse(P) then
-	 		[] repeat(amount:A P) then
-	 		[] loop(seconds:A P) then
-	 		[] clip(low:A high:B P) then
-	 		[] echo(delay:T decay:A P) then
-	 		[] fade(start:A out:B P) then
-	 		[] cut(start:A finish:B P) then
-			else
-				skip %{Append nil $}
-			end
-		end
+		case H 
+      of samples(P) then {Append P {Mix P2T T}}
+      [] partition(P) then {Append {Partition P2T P} {Mix P2T T}}
+      [] wave(P) then
+      [] merge(P) then
+      [] reverse(P) then
+      [] repeat(amount:A P) then
+      [] loop(seconds:A P) then
+      [] clip(low:A high:B P) then
+      [] echo(delay:T decay:A P) then
+      [] fade(start:A out:B P) then
+      [] cut(start:A finish:B P) then
+      else skip %{Append nil $}
+      end
+   end
 	end
       %{Project.readFile CWD#'wave/animals/cow.wav'}
    end
