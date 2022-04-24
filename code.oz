@@ -265,20 +265,19 @@ local
    % Input : A partition 
    % Output :
       
-   fun {Partition Part}
-      % TODO 
-      a=2      
+   fun {Partition Func Part}
+
    end
    
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
-      
+      % !! A modifier
    fun {Merge Musics}
       case Musics
       of H|T then case H
-         of I#M then {Add {Mult I {Mix PartitionToTimedList M}} {Merge T}}
+         of I#M then {SumList {Mult I {Mix PartitionToTimedList M}} {Merge T}}
          else skip
          end
       [] H|nil then
@@ -345,12 +344,31 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Input : Two list with same length or not
+   % Output : Sum of the two list
+   declare
+   fun {Add L1 L2}
+      if {List.length L1} - {List.length L2} > 0 then {Add L1 [L2 0]}
+      elseif {List.length L2} - {List.length L1} > 0 then {Add [L1 0] L2}
+      else skip
+      end
+      case L1
+      of H|nil then H+L2.1|nil
+      [] H|T then H+L2.1|{Add T L2.2}
+      end
+   end
+   L1 = [2 4]
+   L2 = [1 2 3 4]
+   {Browse{Add L1 L2}}
+
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
    % Output :
+   % !! A modifier
    fun {Echo Delay Decay Music}
-      {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList}}
+      {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList Music}}
    end
-
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Start :
    %         Out : 
