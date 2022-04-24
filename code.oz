@@ -362,13 +362,26 @@ local
    %         Music :
    % Output :
    fun {Fade Start Out Music}
+      fun {}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input :
-   % Output :
+   % Input : Start and Out are float, Music is a list of sample
+   % Output : Cut the music between Start and Out boundaries
    fun {Cut Start Finish Music}
-
+      fun {Rec N Liste}
+         if N =< {FloatToInt Finish*44100.0} then
+            case Liste
+            of H|T then
+               if N < {FloatToInt Start*44100.0} then {Rec N+1 T}
+               else H|{Rec N+1 T}
+               end
+            else 0.0|{Rec N+1 nil}
+            end
+         else nil
+         end
+      end
+   in {Rec 1 Music}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
