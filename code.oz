@@ -347,22 +347,17 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Two list with same length or not
    % Output : Sum of the two list
+   % Pas sur du résultat !!!
    declare
    fun {Add L1 L2}
-      if {List.length L1}-{List.length L2} > 0 then {Add L1 {Append L2 [0]}}
-      elseif {List.length L2} - {List.length L1} > 0 then {Add {Append L1 [0]} L2}
+      if {List.length L1}-{List.length L2} > 0 then L2=[L2 0] | {Add L1 L2}
+      elseif {List.length L2} - {List.length L1} > 0 then L1=[L1 0] | {Add L1 L2}
       else case L1
          of H|nil then H+L2.1|nil
-         [] H|T then H+L2.1|{Add L1 L2}
+         [] H|T then H+L2.1|{Add T L2.2}
          end
       end
    end
-
-   declare
-   L1 = [2 4]
-   L2 = [1 2 3 4]
-   {Add L1 L2}
-   {Browse L1}
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
@@ -370,6 +365,11 @@ local
    % !! A modifier
    fun {Echo Delay Decay Music}
       {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList Music}}
+   end
+
+   declare
+   fun {Echo Delay Decay Music}
+      {Add {Map {Decal Delay Music}} *Decay {Mix PartitionToTimedList Music}}
    end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Start :
@@ -456,3 +456,11 @@ in
    % Shows the total time to run your code.
    {Browse {IntToFloat {Time}-Start} / 1000.0}
 end
+
+declare
+L = [1 2 3 4]
+fun {M A}
+   A*2
+end
+{Browse {Map L {M 1}}}
+{Browse L}
