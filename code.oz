@@ -349,15 +349,15 @@ local
    % Output : Sum of the two list
    declare
    fun {Add L1 L2}
-      if {List.length L1} - {List.length L2} > 0 then {Append L2 [0]}|{Add L1 L2}
+      if {List.length L1}-{List.length L2} > 0 then {Append L2 [0]}|{Add L1 L2}
       elseif {List.length L2} - {List.length L1} > 0 then {Append L1 [0]}|{Add L1 L2}
-      else skip
+      else {Browse 1}
       end
    end
    declare
    L1 = [2 4]
    L2 = [1 2 3 4]
-   {Browse {Add L1 L2}}
+   {Add L1 L2}}
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
