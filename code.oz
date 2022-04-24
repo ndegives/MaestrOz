@@ -267,7 +267,7 @@ local
       
    fun {Partition Part}
       % TODO 
-      
+      a=2      
    end
    
       
@@ -359,9 +359,9 @@ local
    fun {Fade Start Out Music}
       local Deb P1 Fin P3 P2 in
          Deb = {List.take Music {FloatToInt (44100.0*Start)}} % Identidie le debut
-         P1 = {List.mapInd Deb fun{$ I A} A*1.0/(Start*44100.0)*{IntToFloat (I-1)} end} % Recupere le debut
+         P1 = {List.mapInd Deb fun{$ I A} A*1.0/(Start*44100.0)*{IntToFloat (I-1)} end} % Applique le fondu 
          Fin = {List.drop Music {FloatToInt {IntToFloat {List.length Music}}-(Out*44100.0)}} %Identifie la fin
-         P3 = {List.mapInd Fin fun {$ I A} A*(1.0-(1.0/(Out*44100.0))*{IntToFloat I}) end} % Recupere la fin
+         P3 = {List.mapInd Fin fun {$ I A} A*(1.0-(1.0/(Out*44100.0))*{IntToFloat I}) end} % Applique le fondu
          P2 = {List.take {List.drop Music {FloatToInt Start*44100.0}} {List.length Music}-{FloatToInt Start*44100.0}-{FloatToInt Out*44100.0}} %Recupere le milieu
          {Append {Append P1 P2} P3}
       end
@@ -394,7 +394,7 @@ local
 	of H|T then 
 		case H 
       of samples(P) then {Append P {Mix P2T T}}
-      [] partition(P) then {Append {Partition P2T P} {Mix P2T T}}
+      [] partition(P) then 
       [] wave(P) then
       [] merge(P) then
       [] reverse(P) then
