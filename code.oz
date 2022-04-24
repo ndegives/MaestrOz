@@ -254,8 +254,7 @@ local
 			of silence(duration:D) then
 				if Acc< 44100.0*N.duration % Generation when we are still in the duration
 			        	0.0 | {SamplesAux N Acc+1.0}
-        			else
-					nil
+        		else nil
 				end
 			[] note(duration:D) then 
 				0.5*{Sin 2*Pi*{Freq Note}*Acc/44100.0} |  {SamplesAux N Acc+1.0}
@@ -362,7 +361,14 @@ local
    %         Music :
    % Output :
    fun {Fade Start Out Music}
-      fun {}
+      local Deb P1 Fin P3 P2 in
+         Deb = {List.take Music {FloatToInt (44100.0*Start)}} % Identidie le debut
+         P1 = {List.mapInd Deb fun{$ I A} A*1.0/(Start*44100.0)*{IntToFloat (I-1)} end} % Recupere le debut
+         Fin = {List.drop Music {FloatToInt {IntToFloat {List.length Music}}-(Out*44100.0)}} %Identifie la fin
+         P3 = {List.mapInd Fin fun {$ I A} A*(1.0-(1.0/(Out*44100.0))*{IntToFloat I}) end} % Recupere la fin
+         P2 = {List.take {List.drop Music {FloatToInt Start*44100.0}} {List.length Music}-{FloatToInt Start*44100.0}-{FloatToInt Out*44100.0}} %Recupere le milieu
+         {Append {Append P1 P2} P3}
+      end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
