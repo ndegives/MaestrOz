@@ -298,6 +298,7 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Music : a list of sample
    % Output : The reversed music. It reverses the order of the samples
+   declare
    fun {Reverse Music}
       {List.reverse Music}
    end
@@ -307,17 +308,17 @@ local
    % Output : The music with amount repetition
    fun {Repeat Amount Music}
       fun {RepeatA Amount Music Acc}
-         if Ammount > 0 then {RepeatA Amount-1 Music {Append Acc Music}}
+         if Amount > 0 then {RepeatA Amount-1 Music {Append Acc Music}}
          else Acc
          end
       end
-   in {ReapeatA Amount Music nil}
+   in {RepeatA Amount Music nil}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Duration (float): in seconds ; Music
    % Output : The music played in loop on the time of the duration. The last repetition is truncated to not exceed the duration
-   fun {Loop Duration Music}
+      fun {Loop Duration Music}
       fun {LoopN Duration Music N}
          if N=< {FloatToInt Duration*44100.0} then case Music
             of H|T then H|{LoopN Duration T N+1}
@@ -348,16 +349,20 @@ local
    % Output : Sum of the two list
    declare
    fun {Add L1 L2}
-      if {List.length L1} - {List.length L2} > 0 then {Append L1 [0]}
-      else if {List.length L2} - {List.length L1} > 0 then {Append L2 [0]}
-      else skip
-      end
-   end
       case L1
-      of H|nil then H+L2.1|nil
-      [] H|T then H+L2.1|{Add T L2.2}
+      of H|T then
+         case L2
+         of H|T then
+            if {List.length L1} - {List.length L2} > 0 then {Append L2 [0]}|{Add L1 L2}
+            elseif {List.length L2} - {List.length L1} > 0 then {Append L1 [0]}|{Add L1 L2}
+            else nil
+            end
+         [] nil then nil
+         end
+      [] nil then nil
       end
    end
+   declare
    L1 = [2 4]
    L2 = [1 2 3 4]
    {Browse {Add L1 L2}}
