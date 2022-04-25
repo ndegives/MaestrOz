@@ -277,7 +277,7 @@ local
    fun {Merge Musics}
       case Musics
       of H|T then case H
-         of I#M then {SumList {Mult I {Mix PartitionToTimedList M}} {Merge T}}
+         of I#M then {Add {Mult I {Mix PartitionToTimedList M}} {Merge T}}
          else skip
          end
       [] H|nil then
