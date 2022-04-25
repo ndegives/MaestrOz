@@ -456,11 +456,3 @@ in
    % Shows the total time to run your code.
    {Browse {IntToFloat {Time}-Start} / 1000.0}
 end
-
-declare
-L = [1 2 3 4]
-fun {M A}
-   A*2
-end
-{Browse {Map L {M 1}}}
-{Browse L}
