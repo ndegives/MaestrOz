@@ -194,9 +194,8 @@ local
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      
-      % Input : extended note as arg
-      % Output : return the height in comparison to A4
+   % Input : extended note as arg
+   % Output : return the height in comparison to A4
       
    fun {Hauteur Note}
          local Oct N in
@@ -273,7 +272,7 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
-      % !! A modifier
+   % !! A modifier
    fun {Merge Musics}
       case Musics
       of H|T then case H
@@ -298,7 +297,6 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Music : a list of sample
    % Output : The reversed music. It reverses the order of the samples
-   declare
    fun {Reverse Music}
       {List.reverse Music}
    end
@@ -318,7 +316,7 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Duration (float): in seconds ; Music
    % Output : The music played in loop on the time of the duration. The last repetition is truncated to not exceed the duration
-      fun {Loop Duration Music}
+   fun {Loop Duration Music}
       fun {LoopN Duration Music N}
          if N=< {FloatToInt Duration*44100.0} then case Music
             of H|T then H|{LoopN Duration T N+1}
@@ -348,7 +346,6 @@ local
    % Input : Two list with same length or not
    % Output : Sum of the two list
    % Pas sur du résultat !!!
-   declare
    fun {Add L1 L2}
       if {List.length L1}-{List.length L2} > 0 then L2=[L2 0] | {Add L1 L2}
       elseif {List.length L2} - {List.length L1} > 0 then L1=[L1 0] | {Add L1 L2}
@@ -367,7 +364,6 @@ local
       {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList Music}}
    end
 
-   declare
    fun {Echo Delay Decay Music}
       {Add {Map {Decal Delay Music}} *Decay {Mix PartitionToTimedList Music}}
    end
@@ -391,7 +387,7 @@ local
    % Input : Start and Out are float, Music is a list of sample
    % Output : Cut the music between Start and Out boundaries
    fun {Cut Start Finish Music}
-      fun {Rec N Liste}
+     fun {Rec N Liste}
          if N =< {FloatToInt Finish*44100.0} then
             case Liste
             of H|T then
@@ -428,7 +424,7 @@ local
       end
    end
 	end
-      %{Project.readFile CWD#'wave/animals/cow.wav'}
+      {Project.readFile CWD#'wave/animals/cow.wav'}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
