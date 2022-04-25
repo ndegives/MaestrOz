@@ -20,7 +20,7 @@ local
             case H
             of note(name:A octave:B sharp:C duration:D instrument:E)|X then {Length T Acc+D}
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Length T Acc+D}
-            [] silence(duration:D) then {Length T Acc+A}
+            [] silence(duration:D) then {Length T Acc+D}
             else 0
             end
          [] nil then Acc
