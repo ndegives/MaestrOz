@@ -292,7 +292,7 @@ local
    % Output : list of samples of the .wav file
       
    fun {Wave File}
-      {Project.readFile File}
+      {Project.load File}
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
