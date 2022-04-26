@@ -243,32 +243,81 @@ local
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
-   %PAS FINIE 
-   % Input : 
-   % Output : 
+		% Input : Prend une extendednote en
+   % Output : Retourne une liste longue de 44100 échantillons * la durée de la note corresponants à la variation de fréquence de la note
    fun {Samples Note}
-      fun {SamplesAux N Acc}
-         case N 
-         of silence(duration:D) then
-				if Acc< 44100.0*N.duration then 0.0 | {SamplesAux N Acc+1.0}
-        		else nil
+	local Pi
+		fun {SamplesAux N Acc}
+         		case N 
+         		of silence(duration:D) then
+				if Acc =< 44100.0*N.duration then 0.0 | {SamplesAux N Acc+1.0}
+        			else nil
 				end
-			[] note(duration:D) then 0.5*({Sin (2*3.14*{Freq Note}*Acc)/44100.0}) |  {SamplesAux N Acc+1.0}
+			[] note(duration:D) then 
+					if Acc =< 44100.0*N.duration then 0.5*({Sin(2*Pi*{Freq N}*Acc)/44100.0}) |  {SamplesAux N Acc+1.0}
+					else
+						nil
+					end
 			end
-      end
-   in
-      {SamplesAux Note 1.0}
+      		end
+   	in
+		Pi = 3.141592
+	      {SamplesAux Note 1.0}
 	end
+end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input : A partition 
-   % Output :
+		% Input : Prend une partition 
+   % Output : Transforme l'ensemble de la partition en échantillons grâce à la fonction Sample en procédant note par note
       
-   fun {Partition Func Part}
-
+   fun {PartitionToSample Part}
+			case Part 
+			of H|T then 
+				case H 
+				of X|Y then
+					{Append {Chord2Samp X} {ParitionToSample T}}
+				[] nil then nil
+				else {Append {Samples H} {ParitionToSample T}}
+				end
+			else nil then nil
+			end
+			
    end
    
       
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		% Input : Prend un accord 
+   % Output : Retourne une liste d'échantillons qui correspond à la moyenne des échantillons de chaque note
+      
+   fun {Chord2Samp Chord}
+			fun {Chord2Samp Chord Acc}
+				case Chord 
+				of H|T then 
+					{Mean {Samples H} {Chord2Samp T}}
+				[] H|nil then {Samples H}
+				end
+			end
+		in 
+			fun {Chord2Samp Chord 0.0}
+   end		
+		
+		
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			% Input : two lists of same size
+			% Output : Return the mean of the two lists
+			fun {Mean X Y}
+				case X 
+				of H|nil then
+					(H+Y.1)/2.0|nil
+				[] H|T then
+					(H+Y.1)/2.0|{Mean T Y.2}
+				else nil
+				end
+			end
+			
+			
+			
+			
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
