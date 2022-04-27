@@ -28,7 +28,73 @@ local
    in {LengthA Part 0} 
    end
 
+   declare
+   fun {LengthB Part}
+      local LengthBAux in
+	      fun{LengthBAux Reste Acc}
+	         case Reste
+	         of nil then
+               Acc
+	         [] H|T then
+               {LengthBAux T H.duration+Acc}
+	         end
+         end %local
+	 {LengthBAux {PartitionToTimedList Part} 0.0}
+      end
+   end
 
+   declare
+   fun {LengthC Part}
+      fun {LengthA L Acc}
+         case L of H|T then
+            case H
+            of drone(note:A amount:P) then
+               {LengthA {Append {Drone A P} T} Acc}
+            [] transpose(semitones:A P) then
+               {LengthA {Append {Transpose A P} T} Acc}
+            [] stretch(factor:A P) then
+               {LengthA {Append {Stretch A P} T} Acc}
+            [] duration(seconds:A P) then
+               {LengthA {Append {Duration A P} T} Acc}
+            [] X|Y then
+               if {HasFeature X duration} then {LengthA T Acc+X.duration}
+               else
+                  {LengthA T Acc+1.0}
+               end
+            [] Atom#Octave then
+               {LengthA T Acc+1.0}
+            [] Atom then
+               if {HasFeature H duration} then
+                  {LengthA T Acc+H.duration}
+               else
+                  {LengthA T Acc+1.0}
+               end
+            end
+         [] nil then Acc
+         else
+            0.0
+         end
+      end
+   in
+      {LengthA Part 0}
+   end
+
+
+   declare
+   Part = c|nil
+
+   {Browse {LengthC Part}}		
+		
+
+		% Fonction Length pas encore au point	
+		
+   declare
+   Part = c|(silence(duration:2.0))|nil
+   {Browse Part.duration}
+   {Browse {LengthB Part}}
+   {Browse 4}
+		
+		
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Sets the duration of the partition to the specified number of seconds.
    % Adapts the duration of each note/silence according to the initial duration
