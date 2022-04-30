@@ -82,6 +82,31 @@ local
       [] nil then nil
       end
    end
+	
+	
+	
+	
+	   declare
+   fun{StretchB Fact Part}
+      local StretchAux in
+         fun {StretchAux Fact ExtPart}
+            case ExtPart
+            of nil then
+               nil
+            [] H|T then
+               case H of
+               note(name:A duration:B octave:C sharp:D instrument:E) then
+                  note(name:H.name duration:Fact*H.duration octave:H.octave sharp:H.sharp instrument:H.instrument)|{StretchAux Fact T}
+               []silence(duration:A) then
+                  silence(duration:Fact*A)|{StretchAux Fact T}
+               [] X|Y then
+                  {StretchAux Fact X|Y} | {StretchAux Fact T}       
+               end
+            end
+         end
+         {StretchAux Fact {PartitionToTimedList Part}}
+      end
+   end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Repeats the note a number (Amount) of times
