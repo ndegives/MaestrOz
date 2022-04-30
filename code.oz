@@ -302,7 +302,7 @@ local
          end
       in
          Pi = 3.141592
-      {SamplesAux Note 1.0}
+         {SamplesAux Note 1.0}
       end
    end
 
@@ -571,7 +571,7 @@ in
 
    % Add variables to this list to avoid "local variable used only once"
    % warnings.
-   {ForAll [NoteToExtended Music] Wait}
+   {ForAll [NoteToExtended Music Samples PartitionToSample Merge Stretch] Wait}
    
    % Calls your code, prints the result and outputs the result to `out.wav`.
    % You don't need to modify this.
