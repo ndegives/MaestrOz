@@ -4,7 +4,7 @@
 local
    % See project statement for API details.
    % !!! Please remove CWD identifier when submitting your project !!!
-   CWD = 'C:/Nico/Github/MaestrOz' % Put here the **absolute** path to the project files
+   CWD = 'C:/Nico/Github/MaestrOz/' % Put here the **absolute** path to the project files
    [Project] = {Link [CWD#'Project2022.ozf']}
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
@@ -316,9 +316,9 @@ local
 		of H|T then 
 			case H 
 			of X|Y then
-				{Append {Chord2Samp H} {ParitionToSample T}}
+				{Append {Chord2Sample H} {PartitionToSample T}}
 			[] nil then nil
-			else {Append {Samples H} {ParitionToSample T}}
+			else {Append {Samples H} {PartitionToSample T}}
 			end
 		else nil
 		end	
@@ -361,11 +361,11 @@ local
       case Musics
       of H|T then case H
          of I#M then {Add {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end} {Merge T}}
-         else skip
+         else nil
          end
       [] H|nil then
          case H of I#M then {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end}
-         else skip
+         else nil
          end
       end
    end
@@ -528,7 +528,7 @@ local
          of samples(P) then
             {Append P {Mix P2T T}}
          [] partition(P) then
-            {Append {P2S P2T P} {Mix P2T T}}
+            {Append {PartitionToSample P} {Mix P2T T}}
          [] wave(P) then
             {Append {Wave P} {Mix P2T T}}
          [] merge(P) then
