@@ -201,7 +201,7 @@ local
             end
          end
       end
-   in {TransposedNote Note 0}
+   in {TransposedNote Notes 0}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
