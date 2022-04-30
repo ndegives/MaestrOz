@@ -13,38 +13,9 @@ local
    % If chord, take only the first note since chord = several notes at the same time
    % Input : A partition (Part)
    % Output : The duration of the partition
+
+	   declare
    fun {Length Part}
-      fun {LengthA Part Acc}
-         case Part of
-         H|T then
-            case H
-            of note(name:A octave:B sharp:C duration:D instrument:E)|X then {Length T Acc+D}
-            [] note(name:A octave:B sharp:C duration:D instrument:E) then {Length T Acc+D}
-            [] silence(duration:D) then {Length T Acc+D}
-            else 0
-            end
-         [] nil then Acc
-      end
-   in {LengthA Part 0} 
-   end
-
-   declare
-   fun {LengthB Part}
-      local LengthBAux in
-	      fun{LengthBAux Reste Acc}
-	         case Reste
-	         of nil then
-               Acc
-	         [] H|T then
-               {LengthBAux T H.duration+Acc}
-	         end
-         end %local
-	 {LengthBAux {PartitionToTimedList Part} 0.0}
-      end
-   end
-
-   declare
-   fun {LengthC Part}
       fun {LengthA L Acc}
          case L of H|T then
             case H
@@ -76,24 +47,13 @@ local
          end
       end
    in
-      {LengthA Part 0}
+      {LengthA Part 0.0}
    end
 
+	%   declare
+   % Part = c|silence(duration:2.0)|nil
 
-   declare
-   Part = c|nil
-
-   {Browse {LengthC Part}}		
-		
-
-		% Fonction Length pas encore au point	
-		
-   declare
-   Part = c|(silence(duration:2.0))|nil
-   {Browse Part.duration}
-   {Browse {LengthB Part}}
-   {Browse 4}
-		
+   % {Browse {Length Part}}
 		
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Sets the duration of the partition to the specified number of seconds.
