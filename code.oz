@@ -432,15 +432,20 @@ local
    % Input : Two list with same length or not
    % Output : Sum of the two list
    % Pas sur du résultat !!!
+   declare
    fun {Add L1 L2}
-      if {List.length L1}-{List.length L2} > 0 then L2=[L2 0] | {Add L1 L2}
-      elseif {List.length L2} - {List.length L1} > 0 then L1=[L1 0] | {Add L1 L2}
-      else case L1
-         of H|nil then H+L2.1|nil
-         [] H|T then H+L2.1|{Add T L2.2}
-         end
+      if {List.length L1} \= {List.length L2} then
+        if {List.length L1}>{List.length L2} then {List.zip L1 {Append L2 {Map {List.number 1 ({List.length L1}-{List.length L2}) 1} fun {$ A} A*0 end}} fun {$ A B} A+B end}
+        else {List.zip {Append L1 {Map {List.number 1 ({List.length L2}-{List.length L1}) 1} fun {$ A} A*0 end}} L2 fun {$ A B} A+B end}
+        end
+      else {List.zip L1 L2 fun {$ A B} A+B end}
       end
    end
+   declare
+   L1 = [1 2 3]
+   L2 = [2 3 4 5]
+   {Browse {Add L1 L2}}
+   {Browse {Map L1 fun {$ E} E*0 end}}
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
