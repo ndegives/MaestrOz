@@ -196,10 +196,20 @@ local
       end
    end
 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Input :
-   % Output :
+	   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+   fun {ChordToExtended Chord}
+      case Chord
+      of nil then
+         nil
+      [] H|T then
+         {NoteToExtended H}|{ChordToExtended T}
+   end
+	
+	
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% Input : Part de type liste [a2 a3 a4] extNote|Note|Chord|ExtChord|Transformation
+   % Output : Retourne une ext list
    fun {PartitionToTimedList Partition}
       fun {Acc Partition Acc}
          case Partition 
@@ -211,6 +221,8 @@ local
             [] silence(duration:A) then {Acc T {Append Acc silence(duration:A)}}
             [] Note then {Acc T {Append Acc {NoteToExtended Note}}}
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Acc T {Append Acc note(name:A octave:B sharp:C duration:D instrument:E)}}
+				[] X|Y then % Accord
+               		{Acc T {Append Acc {ChordToExtended H}}}
             else Acc
             end
          else Acc
