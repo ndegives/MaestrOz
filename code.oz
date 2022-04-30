@@ -14,7 +14,6 @@ local
    % Input : A partition (Part)
    % Output : The duration of the partition
 
-	   declare
    fun {Length Part}
       fun {LengthA L Acc}
          case L of H|T then
@@ -161,7 +160,7 @@ local
             end
          end
       end
-   in {TransposedNote Notes 0}
+   in {TransposeNote Notes 0}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -196,7 +195,7 @@ local
       end
    end
 
-	   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
    fun {ChordToExtended Chord}
       case Chord
@@ -204,6 +203,7 @@ local
          nil
       [] H|T then
          {NoteToExtended H}|{ChordToExtended T}
+      end
    end
 	
 	
@@ -236,38 +236,38 @@ local
    % Output : return the height in comparison to A4
       
    fun {Hauteur Note}
-         local Oct N in
-            Oct = {IntToFloat Note.octave} - 4.0
-            case Note.name 
-            of c then
-               if Note.sharp then N=~8.0
-               else N=~9.0
-               end
-            [] d then
-               if Note.sharp then N=~6.0
-               else N=~7.0
-               end
-            [] e then
-               N=~5.0
-            [] f then
-               if Note.sharp then N=~3.0
-               else
-	       		   N=~4.0
-	    		   end
-   	 		[] g then
-	       		if Note.sharp then N=~1.0
-	       		else
-	        			N=~2.0
-	    	   	end
-   	 		[] a then
-	       		if Note.sharp then N=1.0
-	       		else
-	       			N=0.0
-	    	   	end
-            [] b then N=2.0
+      local Oct N in
+         Oct = {IntToFloat Note.octave} - 4.0
+         case Note.name 
+         of c then
+            if Note.sharp then N=~8.0
+            else N=~9.0
+            end
+         [] d then
+            if Note.sharp then N=~6.0
+            else N=~7.0
+            end
+         [] e then
+            N=~5.0
+         [] f then
+            if Note.sharp then N=~3.0
+            else
+	       		N=~4.0
 	    		end
-	 	   	12.0 * Oct + N
-      	end
+   	 	[] g then
+	       	if Note.sharp then N=~1.0
+	       	else
+	        		N=~2.0
+	    	   end
+   	 	[] a then
+	       	if Note.sharp then N=1.0
+	       	else
+	       		N=0.0
+	    	   end
+         [] b then N=2.0
+	    	end
+	 	   12.0 * Oct + N
+      end
    end
              
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,15 +275,14 @@ local
    % Output : return the associated frq 
       
    fun {Freq Note}
-      {Pow 2.O {Hauteur Note}/12.0}*440.0      
+      {Pow 2.0 {Hauteur Note}/12.0}*440.0      
    end
   
       
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
-		% Input : Prend une extendednote en
+	% Input : Prend une extendednote en
    % Output : Retourne une liste longue de 44100 échantillons * la durée de la note corresponants à la variation de fréquence de la note
-   declare
    fun {Samples Note}
       local Pi
          fun {SamplesAux N Acc}
@@ -309,26 +308,25 @@ local
 
 	% {Browse {Samples {NoteToExtended a}}} ça marche !!!!
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		% Input : Prend une partition 
+	% Input : Prend une partition 
    % Output : Transforme l'ensemble de la partition en échantillons grâce à la fonction Sample en procédant note par note
       
    fun {PartitionToSample Part}
-			case Part 
-			of H|T then 
-				case H 
-				of X|Y then
-					{Append {Chord2Samp H} {ParitionToSample T}}
-				[] nil then nil
-				else {Append {Samples H} {ParitionToSample T}}
-				end
-			else nil
+		case Part 
+		of H|T then 
+			case H 
+			of X|Y then
+				{Append {Chord2Samp H} {ParitionToSample T}}
+			[] nil then nil
+			else {Append {Samples H} {ParitionToSample T}}
 			end
-			
+		else nil
+		end	
    end
    
       
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		% Input : Prend un accord 
+	% Input : Prend un accord 
    % Output : Retourne une liste d'échantillons qui correspond à la moyenne des échantillons de chaque note
       
    fun {Chord2Sample Chord}
@@ -359,7 +357,6 @@ local
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
    % !! A modifier
-   declare
    fun {Merge Musics}
       case Musics
       of H|T then case H
@@ -433,7 +430,6 @@ local
    % Input : Two list with same length or not
    % Output : Sum of the two list
    % Pas sur du résultat !!!
-   declare
    fun {Add L1 L2}
       if {List.length L1} \= {List.length L2} then
         if {List.length L1}>{List.length L2} then {List.zip L1 {Append L2 {Map {List.number 1 ({List.length L1}-{List.length L2}) 1} fun {$ A} A*0 end}} fun {$ A B} A+B end}
@@ -442,16 +438,12 @@ local
       else {List.zip L1 L2 fun {$ A B} A+B end}
       end
    end
-   declare
-   L1 = [1 2 3]
-   L2 = [2 3 4 5]
-   {Browse {Add L1 L2}}
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
    % Output :
    % !! A modifier
-   declare
    fun {Echo Delay Decay Music}
       local E in
          E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
@@ -460,8 +452,8 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		% Purpose : take a music and start playing increasly, and stop playing decreasly
-% Input : Start : Time which the mus
+	% Purpose : take a music and start playing increasly, and stop playing decreasly
+   % Input : Start : Time which the mus
    %         Out : 
    %         Music :
    % Output :
@@ -501,26 +493,26 @@ local
 		
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
-	declare
-	{Browse 4} % Test de la console
+	%declare
+	%{Browse 4} % Test de la console
 
-		Note = a#3
-		{Browse {NoteToExtended Note}}	% Test de {NoteToExtended}
+	%	Note = a#3
+	%	{Browse {NoteToExtended Note}}	% Test de {NoteToExtended}
 	
-	{Browse {Mean 10.0|nil 4.0|3.0|nil}} % Test de {Mean}		
+	%{Browse {Mean 10.0|nil 4.0|3.0|nil}} % Test de {Mean}		
 
-	{Browse {Sample {NoteToExtended Note}}} % Test de {Sample}
-   Note1 = {NoteToExtended a}
-   Note2 = {NoteToExtended b}
+	%{Browse {Sample {NoteToExtended Note}}} % Test de {Sample}
+   %Note1 = {NoteToExtended a}
+   %Note2 = {NoteToExtended b}
 
-		Acc = Note1|Note2|nil
-   {Browse Acc}
-   {Browse {Chord2Sample Acc}} % Test de {Chord2Sample}
+	%	Acc = Note1|Note2|nil
+   %{Browse Acc}
+   %{Browse {Chord2Sample Acc}} % Test de {Chord2Sample}
 		
-		Tune = [a|b|nil] % Ceci est un accord vu la façon dont il est inséré dans la partition au-dessous 
-		Partition = {Flatten [Tune|a|nil]} % Ceci est une partition
+	%	Tune = [a|b|nil] % Ceci est un accord vu la façon dont il est inséré dans la partition au-dessous 
+	%	Partition = {Flatten [Tune|a|nil]} % Ceci est une partition
 
-		{Browse {Partition2Sample Partition}} % Test de {Partition2Sample}
+	%	{Browse {Partition2Sample Partition}} % Test de {Partition2Sample}
 		
 		
 
@@ -561,7 +553,7 @@ local
       else
          nil
       end
-end
+   end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
