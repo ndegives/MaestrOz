@@ -359,14 +359,15 @@ local
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
    % !! A modifier
+   declare
    fun {Merge Musics}
       case Musics
       of H|T then case H
-         of I#M then {Add {Mult I {Mix PartitionToTimedList M}} {Merge T}}
+         of I#M then {Add {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end} {Merge T}}
          else skip
          end
       [] H|nil then
-         case H of I#M then {Mult I {Mix PartitionToTimedList M}}
+         case H of I#M then {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end}
          else skip
          end
       end
@@ -454,9 +455,6 @@ local
       {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList Music}}
    end
 
-   fun {Echo Delay Decay Music}
-      {Add {Map {Decal Delay Music}} *Decay {Mix PartitionToTimedList Music}}
-   end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		% Purpose : take a music and start playing increasly, and stop playing decreasly
 % Input : Start : Time which the mus
