@@ -451,8 +451,12 @@ local
    % Input :
    % Output :
    % !! A modifier
+   declare
    fun {Echo Delay Decay Music}
-      {Add {Mult Decay {Decal Delay Music}} {Mix PartitionToTimedList Music}}
+      local E in
+         E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
+         {Merge [1.0#Music Decay#E]}
+      end
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
