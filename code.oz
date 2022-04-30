@@ -86,39 +86,39 @@ local
 	
 	
 	
-	   declare
-   fun{StretchB Fact Part}
-      local StretchAux in
-         fun {StretchAux Fact ExtPart}
-            case ExtPart
-            of nil then
-               nil
-            [] H|T then
-               case H of
-               note(name:A duration:B octave:C sharp:D instrument:E) then
-                  note(name:H.name duration:Fact*H.duration octave:H.octave sharp:H.sharp instrument:H.instrument)|{StretchAux Fact T}
-               []silence(duration:A) then
-                  silence(duration:Fact*A)|{StretchAux Fact T}
-               [] X|Y then
-                  {StretchAux Fact X|Y} | {StretchAux Fact T}       
-               end
-            end
-         end
-         {StretchAux Fact {PartitionToTimedList Part}}
-      end
-   end
+	%   declare
+  % fun{StretchB Fact Part}
+  %    local StretchAux in
+   %      fun {StretchAux Fact ExtPart}
+    %        case ExtPart
+    %        of nil then
+     %          nil
+     %       [] H|T then
+    %           case H of
+     %          note(name:A duration:B octave:C sharp:D instrument:E) then
+     %             note(name:H.name duration:Fact*H.duration octave:H.octave sharp:H.sharp instrument:H.instrument)|{StretchAux Fact T}
+     %          []silence(duration:A) then
+      %            silence(duration:Fact*A)|{StretchAux Fact T}
+       %        [] X|Y then
+       %           {StretchAux Fact X|Y} | {StretchAux Fact T}       
+      %         end
+      %      end
+      %   end
+     %    {StretchAux Fact {PartitionToTimedList Part}}
+    %  end
+  % end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Repeats the note a number (Amount) of times
    % Input : A note (Note) and a number of repetitions (Amount)
    % Output : A list with Amount times note
    fun {Drone Note Amount}
-      fun {Add Amount Acc}
-         if Amount >= 1 then {Add Amount-1 {Append Acc Note}}
+      fun {Addc Amount Acc}
+         if Amount >= 1 then {Addc Amount-1 {Append Acc Note}}
          else Acc
          end
       end
-   in {Add Amount nil}
+   in {Addc Amount nil}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,7 +247,7 @@ local
             [] Note then {Acc T {Append Acc {NoteToExtended Note}}}
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Acc T {Append Acc note(name:A octave:B sharp:C duration:D instrument:E)}}
 				[] X|Y then % Accord
-               		{Acc T {Append Acc {ChordToExtended H}}}
+               {Acc T {Append Acc {ChordToExtended H}}}
             else Acc
             end
          else Acc
@@ -463,7 +463,6 @@ local
       else {List.zip L1 L2 fun {$ A B} A+B end}
       end
    end
-
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
