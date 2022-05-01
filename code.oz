@@ -224,6 +224,7 @@ local
                  sharp:false
                  duration:1.0
                  instrument:none)
+         else silence(duration:1.0) 
          end
       end
    end
@@ -253,14 +254,12 @@ local
             [] drone(note:Note amount:Amount) then {Aux T {Append Acc {Drone Note Amount}}}
             [] transpose(semitones:N P) then {Aux T {Append Acc {Transpose N P}}}
             [] silence(duration:D) then {Aux T {Append Acc [silence(duration:D)]}}
-            [] Atom then {Aux T {Append Acc [{NoteToExtended Atom}]}}
-               %if {HasFeature Atom duration} then
-                %  {Aux T {Append Acc Atom}}
-               %else
-                %  {Aux T {Append Acc {NoteToExtended Atom}}}
-               %end
+            [] Atom then
+               if {HasFeature Atom duration} then {Aux T {Append Acc [Atom]}}
+               else {Aux T {Append Acc [{NoteToExtended Atom}]}}
+               end
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Aux T {Append Acc [note(name:A octave:B sharp:C duration:D instrument:E)]}}
-            [] Name#Octave then {Aux T {Append Acc {NoteToExtended H}}}
+            [] Name#Octave then {Aux T {Append Acc [{NoteToExtended H}]}}
 				[] X|Y then {Aux T {Append Acc {ChordToExtended H}}}
             else Acc
             end
@@ -488,12 +487,12 @@ local
    % Input :
    % Output :
    % !! A modifier
-%    fun {Echo Delay Decay Music}
-%       local E in
-%          E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
-%          {Merge [1.0#Music Decay#E]}
-%       end
-%    end
+   fun {Echo Delay Decay Music}
+      local E in
+         E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
+            {Merge [1.0#Music Decay#E]}
+         end
+      end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Purpose : take a music and start playing increasly, and stop playing decreasly
@@ -585,8 +584,8 @@ local
             {Append {Loop A P} {Mix P2T T}}
          [] clip(low:A high:B P) then
             {Append {Clip A B P} {Mix P2T T}}
-        %  [] echo(delay:T decay:A P) then
-        %     {Append {Echo T A P} {Mix P2T T}}
+         [] echo(delay:T decay:A P) then
+            {Append {Echo T A P} {Mix P2T T}}
          [] fade(start:A out:B P) then
             {Append {Fade A B P} {Mix P2T T}}
          [] cut(start:A finish:B P) then
@@ -615,7 +614,7 @@ in
 
    % Add variables to this list to avoid "local variable used only once"
    % warnings.
-   {ForAll [NoteToExtended Music Samples PartitionToSample Merge Stretch] Wait}
+   {ForAll [NoteToExtended Music Samples PartitionToSample Merge Stretch Length] Wait}
 
    % Calls your code, prints the result and outputs the result to `out.wav`.
    % You don't need to modify this.
