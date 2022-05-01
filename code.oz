@@ -8,7 +8,7 @@ local
    [Project] = {Link [CWD#'Project2022.ozf']}
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns the duration (seconds) of a score by adding the duration of each note/silence
    % If chord, take only the first note since chord = several notes at the same time
    % Input : A partition (Part)
@@ -49,10 +49,6 @@ local
       {LengthA Part 0.0}
    end
 
-	%   declare
-   % Part = c|silence(duration:2.0)|nil
-
-   % {Browse {Length Part}}
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Sets the duration of the partition to the specified number of seconds.
@@ -94,27 +90,7 @@ local
 
 
 
-	%   declare
-  % fun{StretchB Fact Part}
-  %    local StretchAux in
-   %      fun {StretchAux Fact ExtPart}
-    %        case ExtPart
-    %        of nil then
-     %          nil
-     %       [] H|T then
-    %           case H of
-     %          note(name:A duration:B octave:C sharp:D instrument:E) then
-     %             note(name:H.name duration:Fact*H.duration octave:H.octave sharp:H.sharp instrument:H.instrument)|{StretchAux Fact T}
-     %          []silence(duration:A) then
-      %            silence(duration:Fact*A)|{StretchAux Fact T}
-       %        [] X|Y then
-       %           {StretchAux Fact X|Y} | {StretchAux Fact T}
-      %         end
-      %      end
-      %   end
-     %    {StretchAux Fact {PartitionToTimedList Part}}
-    %  end
-  % end
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Repeats the note a number (Amount) of times
@@ -224,8 +200,9 @@ local
                  sharp:false
                  duration:1.0
                  instrument:none)
-         else silence(duration:1.0) 
-         end
+         else silence(duration:1.0)
+            end
+        [] H|T then ChordToExtended
       end
    end
 
@@ -236,8 +213,10 @@ local
       of nil then
          nil
       [] H|T then
-         {NoteToExtended H}|{ChordToExtended T}
-      end
+            case H of X|Y then {ChordToExtended H}
+            else {NoteToExtended H}|{ChordToExtended T}
+            end
+        end
    end
 
 
@@ -251,16 +230,16 @@ local
             case H
             of duration(seconds:A P) then {Aux T {Append Acc {Duration A P}}}
             [] stretch(factor:A P) then {Aux T {Append Acc {Stretch A P}}}
-            [] drone(note:Note amount:Amount) then {Aux T {Append Acc {Drone Note Amount}}}
+            [] drone(note:Note amount:Amount) then {Aux T {Append Acc {Drone Amount {Aux [Note] nil}}}}
             [] transpose(semitones:N P) then {Aux T {Append Acc {Transpose N P}}}
             [] silence(duration:D) then {Aux T {Append Acc [silence(duration:D)]}}
-            [] Atom then
-               if {HasFeature Atom duration} then {Aux T {Append Acc [H]}}
-               else {Aux T {Append Acc [{NoteToExtended H}]}}
-               end
+            [] Note then {Aux T {Append Acc [{NoteToExtended H}]}}
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Aux T {Append Acc [note(name:A octave:B sharp:C duration:D instrument:E)]}}
             [] Name#Octave then {Aux T {Append Acc [{NoteToExtended H}]}}
-				[] X|Y then {Aux T {Append Acc {ChordToExtended H}}}
+            [] X|Y then {Aux T {Append Acc [{Aux X|Y nil}]}}
+         %   [] X|Y then if {HasFeature X duration} then {Aux T {Append Acc H}}
+          %          else {Aux Y {Append Acc {NoteToExtended X}}}|{Aux T Acc}
+           %         end
             else {Aux T Acc}
             end
          else Acc
@@ -490,7 +469,7 @@ local
    fun {Echo Delay Decay Music}
       local E in
          E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
-            {Merge [1.0#Music Decay#E]}
+         {Merge [1.0#Music Decay#E]}
          end
       end
 
@@ -529,34 +508,6 @@ local
       end
    in {Rec 1 Music}
    end
-
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-	% Tests pour la partie Mix : Run les fonctions à tester auparavant sans oublier le fameux "declare"
-
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-	%declare
-	%{Browse 4} % Test de la console
-
-	%	Note = a#3
-	%	{Browse {NoteToExtended Note}}	% Test de {NoteToExtended}
-
-	%{Browse {Mean 10.0|nil 4.0|3.0|nil}} % Test de {Mean}
-
-	%{Browse {Sample {NoteToExtended Note}}} % Test de {Sample}
-   %Note1 = {NoteToExtended a}
-   %Note2 = {NoteToExtended b}
-
-	%	Acc = Note1|Note2|nil
-   %{Browse Acc}
-   %{Browse {Chord2Sample Acc}} % Test de {Chord2Sample}
-
-	%	Tune = [a|b|nil] % Ceci est un accord vu la façon dont il est inséré dans la partition au-dessous
-	%	Partition = {Flatten [Tune|a|nil]} % Ceci est une partition
-
-	%	{Browse {Partition2Sample Partition}} % Test de {Partition2Sample}
-
 
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -599,6 +550,7 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
    Music = {Project.load CWD#'joy.dj.oz'}
    Start
