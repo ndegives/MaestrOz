@@ -111,7 +111,7 @@ local
    % Output : Semitone transfomer note
    fun {TransposeNotes N Notes}
       fun {TransposeNote Note Acc}
-         if Acc>0 then
+         if N>0 then
             if Acc<N then
                case Note.name
                of c then
@@ -139,7 +139,7 @@ local
                end
             else Note
             end
-         elseif Acc<0 then
+         elseif N<0 then
             if Acc>N then
                case Note.name
                of b then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
@@ -177,7 +177,7 @@ local
    % Output : Retourne la partition de notes transformées
    fun {Transpose Semitones Part}
       case Part
-      of H|T then {TransposeNotes Semitones H} | {Transpose Semitones T}
+      of H|T then {TransposeNotes Semitones {NoteToExtended H}} | {Transpose Semitones T}
       [] nil then nil
       end
    end
