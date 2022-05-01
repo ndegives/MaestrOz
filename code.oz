@@ -393,6 +393,8 @@ local
          end
       end
    end
+	
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : relative path to a .wav file (string)
@@ -453,15 +455,27 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Two list with same length or not
    % Output : Sum of the two list
-   % Pas sur du résultat !!!
-   fun {Add L1 L2}
+	
+    fun {Add L1 L2}
       if {List.length L1} \= {List.length L2} then
-        if {List.length L1}>{List.length L2} then {List.zip L1 {Append L2 {Map {List.number 1 ({List.length L1}-{List.length L2}) 1} fun {$ A} A*0 end}} fun {$ A B} A+B end}
-        else {List.zip {Append L1 {Map {List.number 1 ({List.length L2}-{List.length L1}) 1} fun {$ A} A*0 end}} L2 fun {$ A B} A+B end}
+        if {List.length L1} > {List.length L2} then {Add L1 {Append L2 {Map {List.number 1 ({List.length L1}-{List.length L2}) 1} fun {$ A} {IntToFloat A*0} end}}}
+        else {Add L2 {Append L1 {Map {List.number 1 ({List.length L2}-{List.length L1}) 1} fun {$ A} {IntToFloat A*0} end}}}
         end
-      else {List.zip L1 L2 fun {$ A B} A+B end}
+      else {Sum L1 L2}
       end
    end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   % Prend deux listes de même taille et en retourne la somme
+
+   fun{Sum X Y}
+   case X of H|nil then
+      H+Y.1|nil
+     [] H|T then
+      H+Y.1|{Sum T Y.2}
+     end
+  end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
@@ -474,6 +488,14 @@ local
          end
       end
 
+	
+	   
+% Si intensité à 0.5 => 0.66 & 0.33
+   % Si intensité à 0.33 => 0.75 & 0.25
+   % Si intensité à 0.25 => 0.8 & 0.2
+   % Si intensité à 0.2 =>  0.833 & 0.166
+
+   % On passe chaque fois de 1/2 intensité souhaitée à 1/3 , 1/4 à 1/5 etc
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Purpose : take a music and start playing increasly, and stop playing decreasly
    % Input : Start : Time which the mus
