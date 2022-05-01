@@ -200,9 +200,10 @@ local
                  sharp:false
                  duration:1.0
                  instrument:none)
+         [] H|T then {ChordToExtended Atom}
          else silence(duration:1.0)
-            end
-        [] H|T then ChordToExtended
+         end
+      [] H|T then {ChordToExtended Note}
       end
    end
 
@@ -210,13 +211,13 @@ local
 
    fun {ChordToExtended Chord}
       case Chord
-      of nil then
-         nil
+      of nil then nil
       [] H|T then
-            case H of X|Y then {ChordToExtended H}
-            else {NoteToExtended H}|{ChordToExtended T}
-            end
-        end
+         case H of X|Y then {ChordToExtended H}
+         else {NoteToExtended H}|{ChordToExtended T}
+         end
+      else silence(duration:1.0)
+      end
    end
 
 
