@@ -4,7 +4,7 @@
 local
    % See project statement for API details.
    % !!! Please remove CWD identifier when submitting your project !!!
-   CWD = '/Users/gauthierheroufosse/Documents/Studies/MA 1/Q2/Paradigmes de programmation/Projet/project_template/' % Put here the **absolute** path to the project files
+   CWD = 'C:/Nico/Github/MaestrOz/' % Put here the **absolute** path to the project files
    [Project] = {Link [CWD#'Project2022.ozf']}
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
@@ -78,16 +78,16 @@ local
             case Part
             of H|T then
                case H
-               of note(name:A octave:B sharp:C duration:D instrument:E) then note.duration = D*Fact | {StretchAux Fact T} % Pour les notes
+               of note(name:A octave:B sharp:C duration:D instrument:E) then note(name:A octave:B sharp:C duration:D*Fact instrument:E) | {StretchAux Fact T} % Pour les notes
                [] X|Y then {StretchAux Fact X|Y} | {StretchAux Fact T} % Pour les accords
-               [] silence(duration:D) then silence.duration = D*Fact | {StretchAux Fact T} % Pour les silences
+               [] silence(duration:D) then silence(duration:D*Fact) | {StretchAux Fact T} % Pour les silences
                end
             [] nil then nil
             end
          end
       in
          ToExt = {PartitionToTimedList Part}
-      {StretchAux Fact ToExt}
+         {StretchAux Fact ToExt}
       end
    end
 
@@ -223,7 +223,7 @@ local
                  octave:{StringToInt [O]}
                  sharp:false
                  duration:1.0
-                 instrument: none)
+                 instrument:none)
          end
       end
    end
@@ -243,7 +243,6 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Input : Part de type liste [a2 a3 a4] extNote|Note|Chord|ExtChord|Transformation
    % Output : Retourne une ext list
-
    fun {PartitionToTimedList Partition}
       fun {Aux Partition Acc}
          case Partition
@@ -253,23 +252,19 @@ local
             [] stretch(factor:A P) then {Aux T {Append Acc {Stretch A P}}}
             [] drone(note:Note amount:Amount) then {Aux T {Append Acc {Drone Note Amount}}}
             [] transpose(semitones:N P) then {Aux T {Append Acc {Transpose N P}}}
-            [] silence(duration:A) then {Aux T {Append Acc silence(duration:A)}}
-            [] Atom then
-               if {HasFeature Atom duration} then
-                  {Aux T {Append Acc Atom}}
-               else
-                  {Aux T {Append Acc {NoteToExtended Atom}}}
-               end
-            % [] note(name:A octave:B sharp:C duration:D instrument:E) then
-            %    {Aux T {Append Acc note(name:A octave:B sharp:C duration:D instrument:E)}}
+            [] silence(duration:D) then {Aux T {Append Acc [silence(duration:D)]}}
+            [] Atom then {Aux T {Append Acc [{NoteToExtended Atom}]}}
+               %if {HasFeature Atom duration} then
+                %  {Aux T {Append Acc Atom}}
+               %else
+                %  {Aux T {Append Acc {NoteToExtended Atom}}}
+               %end
+            [] note(name:A octave:B sharp:C duration:D instrument:E) then {Aux T {Append Acc [note(name:A octave:B sharp:C duration:D instrument:E)]}}
             [] Name#Octave then {Aux T {Append Acc {NoteToExtended H}}}
-				[] X|Y then % Accord
-               {Aux T {Append Acc {ChordToExtended H}}}
-            else
-               Acc
+				[] X|Y then {Aux T {Append Acc {ChordToExtended H}}}
+            else Acc
             end
-         else
-            Acc
+         else Acc
          end
       end
    in
@@ -297,18 +292,15 @@ local
             N=~5.0
          [] f then
             if Note.sharp then N=~3.0
-            else
-	       		N=~4.0
+            else N=~4.0
 	    		end
    	 	[] g then
 	       	if Note.sharp then N=~1.0
-	       	else
-	        		N=~2.0
+	       	else N=~2.0
 	    	   end
    	 	[] a then
 	       	if Note.sharp then N=1.0
-	       	else
-	       		N=0.0
+	       	else N=0.0
 	    	   end
          [] b then N=2.0
 	    	end
@@ -323,7 +315,6 @@ local
    fun {Freq Note}
       {Pow 2.0 {Hauteur Note}/12.0}*440.0
    end
-
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
