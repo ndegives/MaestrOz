@@ -255,13 +255,13 @@ local
             [] transpose(semitones:N P) then {Aux T {Append Acc {Transpose N P}}}
             [] silence(duration:D) then {Aux T {Append Acc [silence(duration:D)]}}
             [] Atom then
-               if {HasFeature Atom duration} then {Aux T {Append Acc [Atom]}}
-               else {Aux T {Append Acc [{NoteToExtended Atom}]}}
+               if {HasFeature Atom duration} then {Aux T {Append Acc [H]}}
+               else {Aux T {Append Acc [{NoteToExtended H}]}}
                end
             [] note(name:A octave:B sharp:C duration:D instrument:E) then {Aux T {Append Acc [note(name:A octave:B sharp:C duration:D instrument:E)]}}
             [] Name#Octave then {Aux T {Append Acc [{NoteToExtended H}]}}
 				[] X|Y then {Aux T {Append Acc {ChordToExtended H}}}
-            else Acc
+            else {Aux T Acc}
             end
          else Acc
          end
