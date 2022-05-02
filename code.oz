@@ -96,7 +96,7 @@ local
    % Repeats the note a number (Amount) of times
    % Input : A note (Note) and a number of repetitions (Amount)
    % Output : A list with Amount times note
-   fun {Drone Note Amount}
+   fun {Drone Amount Note}
       fun {Addc Amount Acc}
          if Amount >= 1 then {Addc Amount-1 {Append Acc Note}}
          else Acc
