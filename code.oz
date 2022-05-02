@@ -8,7 +8,7 @@ local
    [Project] = {Link [CWD#'Project2022.ozf']}
    Time = {Link ['x-oz://boot/Time']}.1.getReferenceTime
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns the duration (seconds) of a score by adding the duration of each note/silence
    % If chord, take only the first note since chord = several notes at the same time
    % Input : A partition (Part)
@@ -55,6 +55,7 @@ local
    % Adapts the duration of each note/silence according to the initial duration
    % Input : Time : the time in secondes ; Part : the partition
    % Output : The partition (Part) adjusted to the time (Time)
+
    fun {Duration Time Part}
       local L in
          L={Length Part}
@@ -75,7 +76,7 @@ local
             of H|T then
                case H
                of note(name:A octave:B sharp:C duration:D instrument:E) then note(name:A octave:B sharp:C duration:D*Fact instrument:E) | {StretchAux Fact T} % Pour les notes
-               [] X|Y then {StretchAux Fact X|Y} | {StretchAux Fact T} % Pour les accords
+               [] X|Y then {StretchAux Fact H} | {StretchAux Fact T} % Pour les accords
                [] silence(duration:D) then silence(duration:D*Fact) | {StretchAux Fact T} % Pour les silences
                end
             [] nil then nil
@@ -88,97 +89,107 @@ local
    end
 
 
-
-
-
-
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Repeats the note a number (Amount) of times
    % Input : A note (Note) and a number of repetitions (Amount)
    % Output : A list with Amount times note
+
    fun {Drone Amount Note}
       fun {Addc Amount Acc}
          if Amount >= 1 then {Addc Amount-1 {Append Acc Note}}
          else Acc
          end
       end
-   in {Addc Amount nil}
+   in 
+        {Addc Amount nil}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Transposes the notes a certain number of semitones up (positive) or down (negative)
    % Input : N the number of semitones of difference and note the note to transpose
    % Output : Semitone transfomer note
-   fun {TransposeNotes N Notes}
-      fun {TransposeNote Note Acc}
-         if N>0 then
-            if Acc<N then
-               case Note.name
-               of c then
-                  if Note.sharp == flase then {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-                  else {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+
+      fun {TransposeNotes N Notes}
+       fun {TransposeNote Note Acc}
+         case Note 
+         of H|T then [{TransposeNote H 0} {TransposeNote T 0}]
+            [] nil then Note
+         else
+            if N>0 then
+               if Acc<N then
+                  case Note.name
+                  of c then
+                     if Note.sharp == false then {TransposeNote note(name:c octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc+1}
+                     else {TransposeNote note(name:d octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                     end
+                  [] d then
+                     if Note.sharp == false then {TransposeNote note(name:d octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc+1}
+                     else {TransposeNote note(name:e octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                     end
+                  [] e then {TransposeNote note(name:f octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                  [] f then
+                     if Note.sharp == false then {TransposeNote note(name:f octave:Note.octave sharp:true duration:Note.duration instrument : Note.instrument) Acc+1}
+                     else {TransposeNote note(name:g octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                     end
+                  [] g then
+                     if Note.sharp == false then {TransposeNote note(name:g octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc+1}
+                     else {TransposeNote note(name:a octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                     end
+                  [] a then
+                     if Note.sharp == false then {TransposeNote note(name:a octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc+1}
+                     else {TransposeNote note(name:b octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                     end
+                  [] b then {TransposeNote note(name:c octave:Note.octave+1 sharp:false duration:Note.duration instrument:Note.instrument) Acc+1}
+                  else Note 
                   end
-               [] d then
-                  if Note.sharp == false then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-                  else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-                  end
-               [] e then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-               [] f then
-                  if Note.sharp == false then {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-                  else {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-                  end
-               [] g then
-                  if Note.sharp == false then {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-                  else {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-                  end
-               [] a then
-                  if Note.sharp == false then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument : note.instrument) Acc+1}
-                  else {TransposeNote note(name:b octave:Note.octave sharp:false duration:note.duration instrument : note.instrument) Acc+1}
-                  end
-               [] b then {TransposeNote note(name:c octave:Note.octave+1 sharp:false duration:note.duration instrument : note.instrument) Acc+1}
+               else Note
                end
-            else Note
-            end
-         elseif N<0 then
-            if Acc>N then
-               case Note.name
-               of b then {TransposeNote note(name:a octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
-               [] a then
-                  if Note.sharp==true then {TransposeNote note(name:a octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  else {TransposeNote note(name:g octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
+            elseif N<0 then
+               if Acc>N then
+                  case Note.name
+                  of b then {TransposeNote note(name:a octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc-1}
+                  [] a then
+                     if Note.sharp==true then {TransposeNote note(name:a octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     else {TransposeNote note(name:g octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc-1}
+                     end
+                  [] g then
+                     if Note.sharp==true then {TransposeNote note(name:g octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     else {TransposeNote note(name:f octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc-1}
+                     end
+                  [] f then
+                     if Note.sharp==true then {TransposeNote note(name:f octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     else {TransposeNote note(name:e octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     end
+                  [] e then {TransposeNote note(name:d octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc-1}
+                  [] d then
+                     if Note.sharp==true then {TransposeNote note(name:d octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     else {TransposeNote note(name:c octave:Note.octave sharp:true duration:Note.duration instrument:Note.instrument) Acc-1}
+                     end
+                  [] c then
+                     if Note.sharp==true then {TransposeNote note(name:c octave:Note.octave sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     else {TransposeNote note(name:b octave:Note.octave-1 sharp:false duration:Note.duration instrument:Note.instrument) Acc-1}
+                     end
+                     else Note
                   end
-               [] g then
-                  if Note.sharp==true then {TransposeNote note(name:g octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  else {TransposeNote note(name:f octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
-                  end
-               [] f then
-                  if Note.sharp==true then {TransposeNote note(name:f octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  else {TransposeNote note(name:e octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  end
-               [] e then {TransposeNote note(name:d octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
-               [] d then
-                  if Note.sharp==true then {TransposeNote note(name:d octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  else {TransposeNote note(name:c octave:Note.octave sharp:true duration:note.duration instrument:note.instrument) Acc-1}
-                  end
-               [] c then
-                  if Note.sharp==true then {TransposeNote note(name:c octave:Note.octave sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  else {TransposeNote note(name:b octave:Note.octave-1 sharp:false duration:note.duration instrument:note.instrument) Acc-1}
-                  end
+               else Note
                end
-            else Note
             end
          end
       end
-   in {TransposeNote Notes 0}
-   end
-
+    in {TransposeNote Notes 0}
+    end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Prend une partition et transforme chaque note de Semitones semitons
    % Output : Retourne la partition de notes transformées
    fun {Transpose Semitones Part}
       case Part
-      of H|T then {TransposeNotes Semitones {NoteToExtended H}} | {Transpose Semitones T}
-      [] nil then nil
+      of H|T then case H
+         of Note then {TransposeNotes Semitones {NoteToExtended H}} | {Transpose Semitones T}
+         [] note(name:A octave:B sharp:C duration:D instrument:E) then {TransposeNotes Semitones note(name:A octave:B sharp:C duration:D instrument:E)} | {Transpose Semitones T}
+         [] silence(duration:D) then H|{Transpose Semitones T}
+         else {Transpose Semitones {NoteToExtended H}}|{Transpose Semitones T}
+         end
+      else nil
       end
    end
 
@@ -186,11 +197,14 @@ local
 
    % Translate a note to the extended notation.
    % Fonction fournie par les enseignants
+
    fun {NoteToExtended Note}
       case Note
       of H|T then {ChordToExtended Note}
       [] Name#Octave then
          note(name:Name octave:Octave sharp:true duration:1.0 instrument:none)
+      [] note(name:A octave:B sharp:C duration:D instrument:E) then note(name:A octave:B sharp:C duration:D instrument:E)
+      [] silence(duration:D) then silence(duration:D)
       [] Atom then
          if {HasFeature Atom duration} then Atom
          else
@@ -213,19 +227,22 @@ local
 
    fun {ChordToExtended Chord}
       case Chord
-      of nil then nil
+      of nil then
+         nil
       [] H|T then
-         case H of X|Y then {ChordToExtended H}
-         else {NoteToExtended H}|{ChordToExtended T}
-         end
-      else silence(duration:1.0)
-      end
+            case H of X|Y then 
+                {ChordToExtended H}
+            else 
+                {NoteToExtended H}|{ChordToExtended T}
+            end
+        end
    end
 
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Input : Part de type liste [a2 a3 a4] extNote|Note|Chord|ExtChord|Transformation
    % Output : Retourne une ext list
+
    fun {PartitionToTimedList Partition}
       fun {Aux Partition Acc}
          case Partition
@@ -301,6 +318,7 @@ local
 
 	% Input : Prend une extendednote en
    % Output : Retourne une liste longue de 44100 échantillons * la durée de la note corresponants à la variation de fréquence de la note
+
    fun {Samples Note}
       local Pi
          fun {SamplesAux N Acc}
@@ -324,7 +342,7 @@ local
       end
    end
 
-	% {Browse {Samples {NoteToExtended a}}} ça marche !!!!
+
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Input : Prend une partition
    % Output : Transforme l'ensemble de la partition en échantillons grâce à la fonction Sample en procédant note par note
@@ -377,25 +395,22 @@ local
 	end
 
 
-
-
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : list of musics (each with its intensities) to be played in the same time
    % Output : Sum of the musics in one music
    % !! A modifier
-   fun {Merge Musics}
-      case Musics
-      of H|T then case H
-         of I#M then {Add {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end} {Merge T}}
-         else nil
-         end
-      [] H|nil then
-         case H of I#M then {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end}
-         else nil
-         end
-      end
-   end
-	
+
+    fun {Merge Musics}
+       case Musics
+       of H|T then case H
+          of I#M then {Add {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end} {Merge T}}
+          end
+       [] H|nil then
+          case H of I#M then {Map {Mix PartitionToTimedList M} fun {$ A I} A*I end}
+          end
+       end
+    end
+
 
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -457,8 +472,8 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input : Two list with same length or not
    % Output : Sum of the two list
-	
-    fun {Add L1 L2}
+
+   fun {Add L1 L2}
       if {List.length L1} \= {List.length L2} then
         if {List.length L1} > {List.length L2} then {Add L1 {Append L2 {Map {List.number 1 ({List.length L1}-{List.length L2}) 1} fun {$ A} {IntToFloat A*0} end}}}
         else {Add L2 {Append L1 {Map {List.number 1 ({List.length L2}-{List.length L1}) 1} fun {$ A} {IntToFloat A*0} end}}}
@@ -472,32 +487,40 @@ local
    % Prend deux listes de même taille et en retourne la somme
 
    fun{Sum X Y}
-   case X of H|nil then
-      H+Y.1|nil
-     [] H|T then
-      H+Y.1|{Sum T Y.2}
-     end
+      case X
+      of H|nil then
+         H+Y.1|nil
+      [] H|T then
+         H+Y.1|{Sum T Y.2}
+      else
+         nil
+      end
   end
+
+
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Input :
    % Output :
    % !! A modifier
+
    fun {Echo Delay Decay Music}
       local E in
-         E = {Append {Map {List.number 1 {FloatToInt Delay*44100.0} 1} fun {$ A} A*0 end} Music}
+         E = {Append {Map {List.number 1 {FloatToInt {Round Delay*44100.0}} 1} fun {$ A} {IntToFloat A*0} end} Music}
          {Merge [1.0#Music Decay#E]}
-         end
       end
+   end
 
-	
-	   
-% Si intensité à 0.5 => 0.66 & 0.33
+
+   % Si intensité à 0.5 => 0.66 & 0.33
    % Si intensité à 0.33 => 0.75 & 0.25
    % Si intensité à 0.25 => 0.8 & 0.2
    % Si intensité à 0.2 =>  0.833 & 0.166
 
    % On passe chaque fois de 1/2 intensité souhaitée à 1/3 , 1/4 à 1/5 etc
+
+
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Purpose : take a music and start playing increasly, and stop playing decreasly
    % Input : Start : Time which the mus
@@ -577,7 +600,7 @@ local
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-   Music = {Project.load CWD#'joy.dj.oz'}
+   Music = {Project.load CWD#'test.P2T.oz'}
    Start
 
    % Uncomment next line to insert your tests.
